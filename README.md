@@ -1,39 +1,84 @@
-# RescueEye Hacker UI
+# RescueEye
 
-This version keeps the multi-object detection features and adds:
+RescueEye is a computer vision prototype that analyses recorded drone footage and detects rescue-relevant objects.
 
-- Neon green mission-control interface
-- Dark grid and scanline background
-- Radar animation and system status strip
-- Terminal-style settings panel
-- HUD-style result cards and downloads
-- Matching neon overlay on the annotated video
-- Green technical styling in the generated PDF report
+I built this project after attending an FPV drone workshop organised by **Brobot**. The workshop made me think about how drone footage could be used for practical applications beyond flying and recording videos.
 
-## Replace an existing project
+## What RescueEye Does
 
-Replace these files in your current RescueEye folder:
+RescueEye processes drone footage frame by frame using YOLO for object detection and ByteTrack for object tracking.
 
-- `app.py`
-- `analyzer.py`
-- `report.py`
+The system can:
 
-Also copy the `.streamlit` folder.
+- Detect selected objects in drone footage
+- Assign tracking IDs to detected objects
+- Display confidence scores
+- Divide the footage into search sectors
+- Save evidence screenshots
+- Flag low visible movement in detected people
+- Generate a CSV detection log
+- Generate a PDF mission report
+- Create an annotated output video
 
-## Run
+## Detection Modes
 
-Open a terminal inside the project folder:
+The application includes several detection profiles:
 
-```powershell
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
+### Rescue Essentials
 
-This direct command avoids the PowerShell activation issue.
+Detects:
 
-## First-time setup
+- People
+- Cars
+- Trucks
+- Buses
+- Motorcycles
+- Bicycles
+- Boats
+- Aircraft
+- Common animals
+- Backpacks
+- Handbags
+- Suitcases
+- Umbrellas
+- Traffic signs
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
+### People Only
+
+Detects and tracks only people.
+
+### People and Vehicles
+
+Detects people, cars, buses, trucks, motorcycles, bicycles, boats and aircraft.
+
+### People, Animals and Bags
+
+Detects people, common animals, backpacks, handbags, umbrellas and suitcases.
+
+### All Supported Objects
+
+Enables all object classes supported by the pretrained YOLO model.
+
+### Custom Selection
+
+Allows the user to manually choose which objects should be detected.
+
+## How It Works
+
+1. The user uploads a drone video.
+2. OpenCV reads the video frame by frame.
+3. YOLO detects selected objects in each processed frame.
+4. ByteTrack attempts to maintain the same tracking ID across frames.
+5. RescueEye records the object type, confidence score, timestamp and screen sector.
+6. Evidence frames are saved when a new object is detected.
+7. Low apparent movement alerts are calculated for people.
+8. The application generates a mission report and detection log.
+
+## Search Sector System
+
+The video frame is divided into nine sectors:
+
+```text
+A1  B1  C1
+A2  B2  C2
+A3  B3  C3
